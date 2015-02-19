@@ -28,7 +28,7 @@ class PackageManager
         if (!$tag) $tag = $this->getLatestTag($repository);
         $bundleName = $this->getBundleFromRepository($repository);
         $output = $this->outputDir . '/' . $bundleName . '/' . $tag;
-        $this->fs->mkdir($output);;
+        $this->fs->mkdir($output);
         $url = sprintf(
             "https://github.com/{$repository}/archive/%s.zip",
             $tag
@@ -190,7 +190,7 @@ class PackageManager
     
     public function prepareLog($msg)
     {
-        $smg = $msg . "\n";
+        $msg = date('d-m-Y H:m:s') . ': ' . $msg . "\n";
         
         return $msg;
     }
