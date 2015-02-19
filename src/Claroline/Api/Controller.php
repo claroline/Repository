@@ -78,11 +78,10 @@ class Controller
         $payload = json_decode($json);
         $repository = $payload->repository->full_name;
 
-        if (!$this->packageManager->validateGithubPayload($json, $headers['X-Hub-Signature'], $repository)) {
+        if (!$this->packageManager->validateGithubPayload(file_get_contents('php://input'), $headers['X-Hub-Signature'], $repository)) {
             $this->packageManager->logError('Credentials don\'t match.');
         }
     
-        $this->packageManager->logAccess("Access from  $repository");
         $this->packageManager->create($repository);
     }
 
