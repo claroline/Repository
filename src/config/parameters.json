@@ -1,0 +1,5 @@
+{
+    "output_dir": "/home/claroline-package/www/claro-repo/output",
+    "access_log": "/home/claroline-package/www/claro-repo/access.log",
+    "error_log": "/home/claroline-package/www/claro-repo/error.log"
+}

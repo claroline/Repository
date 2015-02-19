@@ -50,13 +50,15 @@ class PackageManager
         //2nd step, unzip everything so we can look at it !
         $archive = new \ZipArchive();
 
-        if ($archive->open($zipFile)) {
+        if ($archive->open($zipFile) === true) {
             $archive->extractTo($output . '/');
             $archive->close();
         } else {
-            throw new \Exception('Couldn\'t open archive ' . $zipFile);
+            $this->logError('Couldn\'t open archive ' . $zipFile);
+            if ($this->logger) $this->logger->writeln('Couldn\'t open archive ' . $zipFile);
         }
 
+        $this->logAccess("Repository $repository cloned !");
         //3rd generate readme for each pkg
         //generate readme here because it should be great !
     }
@@ -174,5 +176,22 @@ class PackageManager
         }
 
         return $maxVersion;
+    }
+    
+    public function logError($msg)
+    {
+        file_put_contents(ParametersHandler::getParameter('access_log'), $this->prepareLog($msg));
+    }
+
+    public function logAccess($msg)
+    {
+        file_put_contents(ParametersHandler::getParameter('error_log'), $this->prepareLog($msg));
+    }
+    
+    public function prepareLog($msg)
+    {
+        $smg = $msg . "\n";
+        
+        return $msg;
     }
 }
