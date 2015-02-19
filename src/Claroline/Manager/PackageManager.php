@@ -180,12 +180,12 @@ class PackageManager
     
     public function logError($msg)
     {
-        file_put_contents(ParametersHandler::getParameter('access_log'), $this->prepareLog($msg));
+        file_put_contents(ParametersHandler::getParameter('error_log'), $this->prepareLog($msg), FILE_APPEND);
     }
 
     public function logAccess($msg)
     {
-        file_put_contents(ParametersHandler::getParameter('error_log'), $this->prepareLog($msg));
+        file_put_contents(ParametersHandler::getParameter('access_log'), $this->prepareLog($msg), FILE_APPEND);
     }
     
     public function prepareLog($msg)
