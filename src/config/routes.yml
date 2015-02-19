@@ -17,3 +17,7 @@ download_tag:
 available_tags:
     path: /bundle/{bundle}/tag/available
     defaults: {method: 'availableTags'}
+
+new_release:
+    path: /release/add
+    defaults: {method: addRelease}

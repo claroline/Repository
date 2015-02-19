@@ -19,4 +19,11 @@ class ParametersHandler
     {
         return array_keys(parse_ini_file(self::$packageFile));
     }
+
+    public static function getRepositorySecret($repository)
+    {
+        $ini = parse_ini_file(self::$packageFile);
+        
+        return $ini[$repository];
+    }
 }

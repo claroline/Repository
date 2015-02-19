@@ -194,4 +194,9 @@ class PackageManager
         
         return $msg;
     }
+
+    public function validateGithubPayload($payload, $secret)
+    {
+        
+    }
 }

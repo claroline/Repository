@@ -54,6 +54,32 @@ class Controller
         $last = $this->packageManager->getLastInstallableTag($bundle, $coreVersion);
         $this->responseManager->renderJson(array('tag' => $last));
     }
+    
+    /**
+     * github hook
+     */
+    public function addRelease()
+    {
+        $headers = getallheaders();
+        
+        if (!isset($headers['X-Hub-Signature'])) {
+            $this->packageManager->logError('X-Hub-Signature missing.');
+            return;
+        }
+
+        $this->packageManager->logAccess('Github hook activated...');
+        
+        if (!isset($_POST['payload'])) {
+            $this->packageManager->logError('Payload missing.');
+            return;
+        }
+
+        $json = $_POST['payload']; 
+        $payload = json_decode($json);
+        $repository = $payload->repository->full_name;
+        $this->packageManager->logAccess("Access from  $repository");
+        $this->packageManager->create($repository);
+    }
 
     public function jsonTag($bundle, $tag)
     {
