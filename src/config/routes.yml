@@ -1,0 +1,19 @@
+last_tag:
+    path: /bundle/{bundle}/tag/last
+    defaults: { method: 'lastTag' }
+
+last_availablee_tag:
+    path: /bundle/{bundle}/tag/{tag}/installable
+    defaults: { method: 'lastInstallableTag' }
+
+json_tag:
+    path: /bundle/{bundle}/tag/{tag}.json
+    defaults: { method: 'jsonTag' }
+
+download_tag:
+    path: /bundle/{bundle}/tag/{tag}/download
+    defaults: { method: 'downloadTag' }
+
+available_tags:
+    path: /bundle/{bundle}/tag/available
+    defaults: {method: 'availableTags'}
