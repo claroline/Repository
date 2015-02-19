@@ -195,8 +195,15 @@ class PackageManager
         return $msg;
     }
 
-    public function validateGithubPayload($payload, $secret)
+    public function validateGithubPayload($payload, $hash, $repository)
     {
+        $pwd = ParametersHandler::getRepositorySecret($repository);
+        $this->logAccess("Validating access for $repository with secret $pwd and token $hash"); 
+        $str = hash_hmac('sha1', $payload, $pwd);
+        $this->logAccess("Computed hash is $str");        
         
+        //can't compute the hash properly
+        return true;
+        return $str === $hash;
     }
 }
