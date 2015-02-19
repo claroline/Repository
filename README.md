@@ -20,28 +20,6 @@ php src/console package:generate [repository name] [--tag=x.x.x] [--a]
 - --tag: a specifig tag (otherwise the latest will be cloned)
 - --a: every repositories in packages.ini
 
-
-## nginx
-server {
-    root /path/to/project/src
-    server_name myserver;
-    error_log /path/to/log;
-    access_log /path/to/log;
-
-    location /output {
-        root path/to/project;
-        autoindex on;
-    }
-
-    location ~ ^/api\.php(/|$) {
-        fastcgi_split_path_info ^(.+\.php)(/.+)$;
-        # fastcgi_pass 127.0.0.1;
-        fastcgi_pass unix:/var/run/php5-fpm.package.sock;
-        include fastcgi_params;
-        fastcgi_param SCRIPT_FILENAME $document_root/$fastcgi_script_name;
-    }
-}
-
 ## api
   [see the routing file] (https://github.com/claroline/Repository/blob/master/src/config/routes.yml)
 ~               
