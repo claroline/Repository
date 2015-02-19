@@ -1,2 +1,3 @@
 src/config/packages.ini
 composer.lock
+src/config/parameters.yml
