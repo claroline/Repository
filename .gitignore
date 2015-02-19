@@ -1,5 +1,5 @@
 src/config/packages.ini
 composer.lock
-src/config/parameters.yml
+src/config/parameters.json
 error.log
 access.log
