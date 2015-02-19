@@ -80,6 +80,7 @@ class Controller
 
         if (!$this->packageManager->validateGithubPayload(file_get_contents('php://input'), $headers['X-Hub-Signature'], $repository)) {
             $this->packageManager->logError('Credentials don\'t match.');
+            return;
         }
     
         $this->packageManager->create($repository);
