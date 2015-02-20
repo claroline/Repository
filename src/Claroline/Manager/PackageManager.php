@@ -199,7 +199,8 @@ class PackageManager
         $tags = array();
 
         foreach ($bundles as $bundle) {
-            $tags[$bundle] = $this->getLastInstallableTag($bundle, $coreVersion);
+            $version = $this->getLastInstallableTag($bundle, $coreVersion);
+            if ($version) $tags[$bundle] = $version;
         }
 
         return $tags;
