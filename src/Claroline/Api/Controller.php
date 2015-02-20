@@ -24,8 +24,9 @@ class Controller
      */
     public function lastTag($bundle)
     {
-        $last = $this->packageManager->getLatestUploadedTag($bundle);
-        $this->responseManager->renderJson(array('tag' => $last));
+        $tag = $this->packageManager->getLatestUploadedTag($bundle);
+        $bundle = $this->packageManager->getBundle($bundle, $tag);
+        $this->responseManager->renderJson($bundle->toArray());
     }
 
     /**

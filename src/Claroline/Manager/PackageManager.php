@@ -5,6 +5,7 @@ namespace Claroline\Manager;
 use Claroline\Exception\BundleNotFoundException;
 use Claroline\Exception\VendorNotFoundException;
 use Claroline\Handler\ParametersHandler;
+use Claroline\Model\Bundle;
 use Symfony\Component\Filesystem\Filesystem;
 
 class PackageManager
@@ -25,7 +26,7 @@ class PackageManager
      */
     public function create($repository, $tag = null)
     {
-        if (!$tag) $tag = $this->getLatestTag($repository);
+        if (!$tag) $tag = $this->getLatestRepositoryTag($repository);
         $bundleName = $this->getBundleFromRepository($repository);
         $output = $this->outputDir . '/' . $bundleName . '/' . $tag;
         $this->fs->mkdir($output);
@@ -66,7 +67,7 @@ class PackageManager
     /**
      * Get the last available tag of a repository from github.
      */
-    public function getLatestTag($repository)
+    public function getLatestRepositoryTag($repository)
     {
         $tags = $this->getRepositoryTags($repository);
 
@@ -231,5 +232,55 @@ class PackageManager
         //$this->logAccess("Computed hash is $str");
 
         return 'sha1=' . $str === $hash;
+    }
+
+    public function getBundle($bundle, $version)
+    {
+        $composerPath = $this->outputDir . "/$bundle/$version/$bundle-$version/composer.json";
+        $json = file_get_contents($composerPath);
+        $data = json_decode($json);
+        $bundle = new Bundle(
+            $this->getComposerClarolineName($data),
+            $this->getComposerAuthors($data),
+            $this->getComposerDescription($data),
+            $this->getComposerVersion($data),
+            $this->getComposerType($data)
+        );
+
+        return $bundle;
+    }
+
+    private function getComposerVersion($data)
+    {
+        if (property_exists($data, 'version')) return $data->version;
+
+        return "0.0.0.0";
+    }
+
+    private function getComposerClarolineName($data)
+    {
+        $prop = 'target-dir';
+        $parts = explode('/', $data->$prop);
+
+        return end($parts);
+    }
+
+    private function getComposerType($data)
+    {
+        return $data->type;
+    }
+
+    private function getComposerAuthors($data)
+    {
+        if (property_exists($data, 'authors')) return $data->authors;
+
+        return array();
+    }
+
+    private function getComposerDescription($data)
+    {
+        if (property_exists($data, 'description')) return $data->description;
+
+        return null;
     }
 }
