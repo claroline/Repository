@@ -54,27 +54,36 @@ class Controller
         $last = $this->packageManager->getLastInstallableTag($bundle, $coreVersion);
         $this->responseManager->renderJson(array('tag' => $last));
     }
-    
+
+    /**
+     * Returns a list of installable bundle tag for a version of the core bundle
+     */
+    public function lastInstallableTags($coreVersion)
+    {
+        $tags = $this->packageManager->getLastInstallableTags($coreVersion);
+        $this->responseManager->renderJson(array('tags' => $tags));
+    }
+
     /**
      * github hook
      */
     public function addRelease()
     {
         $headers = getallheaders();
-        
+
         if (!isset($headers['X-Hub-Signature'])) {
             $this->packageManager->logError('X-Hub-Signature missing.');
             return;
         }
 
         $this->packageManager->logAccess('Github hook activated...');
-        
+
         if (!isset($_POST['payload'])) {
             $this->packageManager->logError('Payload missing.');
             return;
         }
 
-        $json = $_POST['payload']; 
+        $json = $_POST['payload'];
         $payload = json_decode($json);
         $repository = $payload->repository->full_name;
 
@@ -82,7 +91,7 @@ class Controller
             $this->packageManager->logError('Credentials don\'t match.');
             return;
         }
-    
+
         $this->packageManager->create($repository);
     }
 

@@ -163,21 +163,48 @@ class PackageManager
         $nextMajor = ((integer) $majorV) + 1;
         $dir = $this->getBundleOutputDirectory($bundle);
         $iterator = new \DirectoryIterator($dir);
-        $maxVersion = "$majorV.0.0";
-        $nextMajorVersion = "$nextMajor.0.0";
+        $maxVersion = "$majorV.0.0.0.0.0";
+        $nextMajorVersion = "$nextMajor.0.0.0.0.0";
 
         foreach ($iterator as $el) {
             if (
                 version_compare($maxVersion, $el->getBaseName(), '<') &&
-                version_compare($el->getBaseName(), $nextMajor, '<') 
+                version_compare($el->getBaseName(), $nextMajor, '<')
             ) {
                 $maxVersion = $el->getBaseName();
             }
         }
 
-        return $maxVersion;
+        return $maxVersion === "$majorV.0.0.0.0.0" ? null: $maxVersion;
     }
-    
+
+    public function getAvailableBundles()
+    {
+        $bundles = array();
+        $iterator = new \DirectoryIterator($this->outputDir);
+
+        foreach ($iterator as $el) {
+            if (!$el->isDot() && $el->isDir()) $bundles[] = $el->getBaseName();
+        }
+
+        return $bundles;
+    }
+
+    /**
+     * Returns a list of installable bundle tag for a version of the core bundle
+     */
+    public function getLastInstallableTags($coreVersion)
+    {
+        $bundles = $this->getAvailableBundles();
+        $tags = array();
+
+        foreach ($bundles as $bundle) {
+            $tags[$bundle] = $this->getLastInstallableTag($bundle, $coreVersion);
+        }
+
+        return $tags;
+    }
+
     public function logError($msg)
     {
         file_put_contents(ParametersHandler::getParameter('error_log'), $this->prepareLog($msg), FILE_APPEND);
@@ -187,21 +214,21 @@ class PackageManager
     {
         file_put_contents(ParametersHandler::getParameter('access_log'), $this->prepareLog($msg), FILE_APPEND);
     }
-    
+
     public function prepareLog($msg)
     {
         $msg = date('d-m-Y H:m:s') . ': ' . $msg . "\n";
-        
+
         return $msg;
     }
 
     public function validateGithubPayload($payload, $hash, $repository)
     {
         $pwd = ParametersHandler::getRepositorySecret($repository);
-        //$this->logAccess("Validating access for $repository with secret $pwd and token $hash"); 
+        //$this->logAccess("Validating access for $repository with secret $pwd and token $hash");
         $str = hash_hmac('sha1', $payload, $pwd);
-        //$this->logAccess("Computed hash is $str");        
-        
+        //$this->logAccess("Computed hash is $str");
+
         return 'sha1=' . $str === $hash;
     }
 }
