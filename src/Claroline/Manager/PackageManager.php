@@ -246,7 +246,8 @@ class PackageManager
             $this->getComposerDescription($data),
             $version,
             $this->getComposerType($data),
-            $this->getComposerLicense($data)
+            $this->getComposerLicense($data),
+            $this->getComposerTargetDir($data)
         );
 
         return $bundle;
@@ -284,6 +285,13 @@ class PackageManager
         if (property_exists($data, 'license')) return $data->license;
 
         return 'unknown';
+    }
+
+    private function getComposerTargetDir($data)
+    {
+        $prop = 'target-dir';
+
+        return $data->$prop;
     }
 
     private function getComposerDescription($data)
