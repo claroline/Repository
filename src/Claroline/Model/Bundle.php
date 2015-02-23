@@ -9,13 +9,15 @@ class Bundle
     private $description;
     private $version;
     private $type;
+    private $license;
 
-    public function __construct($name, $authors, $description, $version, $type) {
+    public function __construct($name, $authors, $description, $version, $type, $license) {
         $this->name = $name;
         $this->authors = $authors;
         $this->description = $description;
         $this->version = $version;
         $this->type = $type;
+        $this->license = $license;
     }
 
     public function toArray()

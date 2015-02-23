@@ -245,7 +245,8 @@ class PackageManager
             $this->getComposerAuthors($data),
             $this->getComposerDescription($data),
             $version,
-            $this->getComposerType($data)
+            $this->getComposerType($data),
+            $this->getComposerLicense($data)
         );
 
         return $bundle;
@@ -276,6 +277,13 @@ class PackageManager
         if (property_exists($data, 'authors')) return $data->authors;
 
         return array();
+    }
+
+    private function getComposerLicense($data)
+    {
+        if (property_exists($data, 'license')) return $data->license;
+
+        return 'unknown';
     }
 
     private function getComposerDescription($data)
