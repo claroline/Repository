@@ -66,10 +66,10 @@ class Controller
 
         foreach ($bundles as $bundle => $version) {
             $o = $this->packageManager->getBundle($bundle, $version);
-            $pkgs[$bundle] = $o->toArray();
+            $pkgs[] = $o->toArray();
         }
 
-        $this->responseManager->renderJson(array('packages' => $pkgs));
+        $this->responseManager->renderJson($pkgs);
     }
 
     /**
