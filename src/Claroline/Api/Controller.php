@@ -48,6 +48,16 @@ class Controller
     }
 
     /**
+     * Download the last installable version of a bundle
+     */
+    public function downloadLast($bundle, $coreVersion)
+    {
+        $tag = $this->packageManager->getLastInstallableTag($bundle, $coreVersion);
+        $tagDir = $this->packageManager->getTagOutputDirectory($bundle, $tag);
+        $this->responseManager->downloadFile("$tagDir/package.zip");
+    }
+
+    /**
      * Returns the last installable bundle tag for a version of the core bundle
      */
     public function lastInstallableTag($bundle, $coreVersion)
@@ -101,10 +111,5 @@ class Controller
         }
 
         $this->packageManager->create($repository);
-    }
-
-    public function jsonTag($bundle, $tag)
-    {
-
     }
 }
