@@ -12,21 +12,14 @@ class Bundle
 
     public function __construct($name, $authors, $description, $version, $type) {
         $this->name = $name;
-        $this->auhtors = $authors;
+        $this->authors = $authors;
         $this->description = $description;
         $this->version = $version;
         $this->type = $type;
     }
 
-
     public function toArray()
     {
-        return array(
-            'name' => $this->name,
-            'authors' => $this->authors,
-            'description' => $this->description,
-            'version' => $this->version,
-            'type' => $this->type
-        );
+        return get_object_vars($this);
     }
 }

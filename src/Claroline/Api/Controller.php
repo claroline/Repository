@@ -61,8 +61,15 @@ class Controller
      */
     public function lastInstallableTags($coreVersion)
     {
-        $tags = $this->packageManager->getLastInstallableTags($coreVersion);
-        $this->responseManager->renderJson(array('tags' => $tags));
+        $bundles = $this->packageManager->getLastInstallableTags($coreVersion);        
+        $pkgs = array();
+
+        foreach ($bundles as $bundle => $version) {
+            $o = $this->packageManager->getBundle($bundle, $version);
+            $pkgs[$bundle] = $o->toArray();
+        }
+
+        $this->responseManager->renderJson(array('packages' => $pkgs));
     }
 
     /**

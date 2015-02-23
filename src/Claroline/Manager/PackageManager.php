@@ -243,7 +243,7 @@ class PackageManager
             $this->getComposerClarolineName($data),
             $this->getComposerAuthors($data),
             $this->getComposerDescription($data),
-            $this->getComposerVersion($data),
+            $version,
             $this->getComposerType($data)
         );
 
