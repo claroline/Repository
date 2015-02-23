@@ -162,9 +162,10 @@ class PackageManager
         $arr = explode(".", $coreVersion);
         $majorV = $arr[0];
         $nextMajor = ((integer) $majorV) + 1;
+        $prevMajor = ((integer) $majorV) - 1;
         $dir = $this->getBundleOutputDirectory($bundle);
         $iterator = new \DirectoryIterator($dir);
-        $maxVersion = "$majorV.0.0.0.0.0";
+        $maxVersion = "$prevMajor.999.999.999.999";
         $nextMajorVersion = "$nextMajor.0.0.0.0.0";
 
         foreach ($iterator as $el) {
@@ -176,7 +177,7 @@ class PackageManager
             }
         }
 
-        return $maxVersion === "$majorV.0.0.0.0.0" ? null: $maxVersion;
+        return $maxVersion === "$prevMajor.999.999.999.999" ? null: $maxVersion;
     }
 
     public function getAvailableBundles()
