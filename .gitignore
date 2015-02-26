@@ -6,3 +6,4 @@ access.log
 scripts/*
 scripts.log
 tmp
+release/*
