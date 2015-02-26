@@ -220,7 +220,7 @@ class PackageManager
 
     public function prepareLog($msg)
     {
-        $msg = date('d-m-Y H:m:s') . ': ' . $msg . "\n";
+        $msg = date('d-m-Y H:i:s') . ': ' . $msg . "\n";
 
         return $msg;
     }
