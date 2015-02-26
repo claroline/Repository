@@ -63,7 +63,7 @@ class PackageManager
         $scripts = ParametersHandler::getParameter('hook_scripts');
 
         foreach ($scripts as $script) {
-            exec("$script '" . escapeshellcmd($bundleName) . "' '" . escapeshellcmd($tag) . "'");
+            exec("$script '" . escapeshellcmd($bundleName) . "' '" . escapeshellcmd($tag) . "' '" . escapeshellcmd(ParametersHandler::getParameter('hook_log')) . "'");
         }
         //3rd generate readme for each pkg
         //generate readme here because it should be great !
