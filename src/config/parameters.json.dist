@@ -2,4 +2,5 @@
     "output_dir": "/path/to/output/dir",
     "access_log": "/path/to/access/log",
     "error_log": "/path/to/error/log"
+    "hook_scripts": ["/path/to/script/scripts.php"]
 }

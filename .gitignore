@@ -3,3 +3,6 @@ composer.lock
 src/config/parameters.json
 error.log
 access.log
+scripts/*
+scripts.log
+tmp

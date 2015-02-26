@@ -60,6 +60,11 @@ class PackageManager
         }
 
         $this->logAccess("Repository $repository cloned !");
+        $scripts = ParametersHandler::getParameter('hook_scripts');
+
+        foreach ($scripts as $script) {
+            exec("$script '" . escapeshellcmd($bundleName) . "' '" . escapeshellcmd($tag) . "'");
+        }
         //3rd generate readme for each pkg
         //generate readme here because it should be great !
     }
