@@ -52,6 +52,11 @@ class PackageManager
         $archive = new \ZipArchive();
 
         if ($archive->open($zipFile) === true) {
+            //we also add a version file
+            $archive->addFromString('VERSION.txt', $tag);
+            $archive->close();
+            $archive = new \ZipArchive();
+            $archive->open($zipFile);
             $archive->extractTo($output . '/');
             $archive->close();
         } else {
