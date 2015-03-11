@@ -207,6 +207,10 @@ class PackageManager
      */
     public function getLastInstallableTags($coreVersion)
     {
+        if ($coreVersion === 'dev-master') {
+            $coreVersion = $this->getLatestUploadedTag('CoreBundle');        
+        }
+
         $bundles = $this->getAvailableBundles();
         $tags = array();
 
