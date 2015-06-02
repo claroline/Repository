@@ -54,7 +54,7 @@ class PackageManager
 
         if ($archive->open($zipFile) === true) {
             //we also add a version file
-            $archive->addFromString('VERSION.txt', $tag);
+            $archive->addFromString($bundleName . '-' . $outputTag . '/VERSION.txt', $outputTag);
             $archive->close();
             $archive = new \ZipArchive();
             $archive->open($zipFile);
