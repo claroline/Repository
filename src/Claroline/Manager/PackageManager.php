@@ -28,14 +28,15 @@ class PackageManager
     {
         if (!$tag) $tag = $this->getLatestRepositoryTag($repository);
         $bundleName = $this->getBundleFromRepository($repository);
-        $output = $this->outputDir . '/' . $bundleName . '/' . $tag;
+        $outputTag = str_replace('v', '', $tag);
+        $output = $this->outputDir . '/' . $bundleName . '/' . $outputTag;
         $this->fs->mkdir($output);
         $url = sprintf(
             "https://github.com/{$repository}/archive/%s.zip",
             $tag
         );
 
-        if ($this->logger) $this->logger->writeln("cloning $repository $tag...");
+        if ($this->logger) $this->logger->writeln("cloning $repository $outputTag...");
         //1st step, download and store the archive
 
         $ch = curl_init();
@@ -89,8 +90,16 @@ class PackageManager
      */
     public function getRepositoryTags($repository)
     {
+        $options = array(
+            'http' => array(
+                'method' => 'GET',
+                'user_agent' => 'Claroline',
+                'timeout' => 5
+            )
+        );
+
         return json_decode(file_get_contents("https://api.github.com/repos/$repository/tags", false,
-            stream_context_create(['http' => ['header' => "User-Agent: Claroline\r\n"]])
+            stream_context_create($options)
         ));
     }
 
