@@ -6,7 +6,7 @@ use Claroline\Exception\BundleNotFoundException;
 use Claroline\Exception\VendorNotFoundException;
 use Claroline\Handler\ParametersHandler;
 use Claroline\Model\Bundle;
-use Symfony\Component\Filesystem\Filesystem;
+use Claroline\FileSystem\FileSystem;
 
 class PackageManager
 {
@@ -49,8 +49,30 @@ class PackageManager
         curl_exec ($ch);
         curl_close ($ch);
         fclose($file);
-        //2nd step, unzip everything so we can look at it !
+        //2nd step, unzip everything and rename the root directory before we pack everything again!
         $archive = new \ZipArchive();
+
+        if ($this->logger) $this->logger->writeln("first extraction...");
+        //first we unzip
+        if ($archive->open($zipFile) === true) {
+            $archive->extractTo($output . '/');
+            $archive->close();
+        }
+
+        if ($this->logger) $this->logger->writeln("renaming root directory...");
+
+        $this->fs->rename(
+            $output . '/' . $this->getRepositoryUrlBundleName($repository) . '-' . $outputTag,
+            $output . '/' . $bundleName . '-' . $outputTag
+        );
+
+        if ($this->logger) $this->logger->writeln("injecting version file...");
+
+        file_put_contents($output . '/' . $bundleName . '-' . $outputTag . '/VERSION.txt', $outputTag);
+
+        /*$tmp = $this->fs->zipDir($output . '/' );
+
+        //then we rename it (ZipArchive doesn't handle directory rename)
 
         if ($archive->open($zipFile) === true) {
             //we also add a version file
@@ -72,7 +94,7 @@ class PackageManager
             exec("$script '" . escapeshellcmd($bundleName) . "' '" . escapeshellcmd($tag) . "' '" . escapeshellcmd(ParametersHandler::getParameter('hook_log')) . "'");
         }
         //3rd generate readme for each pkg
-        //generate readme here because it should be great !
+        //generate readme here because it should be great !*/
     }
 
     /**
@@ -126,6 +148,14 @@ class PackageManager
         $name = end($parts);
 
         return $name;
+    }
+
+    /**
+     * Get the bundle name from a repository url.
+     */
+    public function getRepositoryUrlBundleName($repository)
+    {
+        return substr($repository, strpos($repository, "/") + 1);
     }
 
     /**
