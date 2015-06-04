@@ -11,8 +11,20 @@ class Bundle
     private $type;
     private $license;
     private $targetDir;
+    private $basePath;
+    private $requirements;
 
-    public function __construct($name, $authors, $description, $version, $type, $license, $targetDir) {
+    public function __construct(
+        $name, 
+        $authors, 
+        $description, 
+        $version, 
+        $type, 
+        $license, 
+        $targetDir, 
+        $basePath,
+        $requirements
+    ) {
         $this->name = $name;
         $this->authors = $authors;
         $this->description = $description;
@@ -20,6 +32,8 @@ class Bundle
         $this->type = $type;
         $this->license = $license;
         $this->targetDir = $targetDir;
+        $this->basePath = $basePath;
+        $this->requirements = $requirements;
     }
 
     public function toArray()

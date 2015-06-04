@@ -270,7 +270,9 @@ class PackageManager
             $version,
             $this->getComposerType($data),
             $this->getComposerLicense($data),
-            $this->getComposerTargetDir($data)
+            $this->getComposerTargetDir($data),
+            $this->getComposerBasePath($data),
+            $this->getComposerRequirements($data)
         );
 
         return $bundle;
@@ -322,5 +324,15 @@ class PackageManager
         if (property_exists($data, 'description')) return $data->description;
 
         return null;
+    }
+
+    private function getComposerBasePath($data)
+    {
+        if (property_exists($data, 'name')) return $data->name;
+    }
+
+    private function getComposerRequirements($data)
+    {
+        if (property_exists($data, 'require')) return $data->require;
     }
 }
