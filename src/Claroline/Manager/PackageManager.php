@@ -108,7 +108,24 @@ class PackageManager
      */
     public function getBundleFromRepository($repository)
     {
-        return substr($repository, strpos($repository, "/") + 1);
+        $options = array(
+            'http' => array(
+                'method' => 'GET',
+                'user_agent' => 'Claroline',
+                'timeout' => 5
+            )
+        );
+
+        $url = "https://raw.githubusercontent.com/{$repository}/master/composer.json";
+        $data = json_decode(file_get_contents($url, false,
+            stream_context_create($options)
+        ));
+
+        $prop = 'target-dir';
+        $parts = explode('/', $data->$prop);
+        $name = end($parts);
+
+        return $name;
     }
 
     /**
@@ -217,7 +234,7 @@ class PackageManager
     public function getLastInstallableTags($coreVersion)
     {
         if ($coreVersion === 'dev-master') {
-            $coreVersion = $this->getLatestUploadedTag('CoreBundle');        
+            $coreVersion = $this->getLatestUploadedTag('CoreBundle');
         }
 
         $bundles = $this->getAvailableBundles();
