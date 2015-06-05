@@ -106,17 +106,15 @@ class FileSystem extends Fs
         if ($removeOldFiles) {
             $this->recursiveRemoveDirectory($directory);
         }
-        
-        rmdir($directory);
 
         return $archive;
     }
 
     public function addDirToZip($directory, \ZipArchive $zipArchive, $includeRoot = false)
     {
-        $iterator = new RecursiveIteratorIterator(
-            new RecursiveDirectoryIterator($directory, RecursiveDirectoryIterator::SKIP_DOTS),
-            RecursiveIteratorIterator::CHILD_FIRST
+        $iterator = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator($directory, \RecursiveDirectoryIterator::SKIP_DOTS),
+            \RecursiveIteratorIterator::CHILD_FIRST
         );
         foreach ($iterator as $el) {
             if ($el->isFile()) {

@@ -67,26 +67,14 @@ class PackageManager
         );
 
         if ($this->logger) $this->logger->writeln("injecting version file...");
-
         file_put_contents($output . '/' . $bundleName . '-' . $outputTag . '/VERSION.txt', $outputTag);
-
-        /*$tmp = $this->fs->zipDir($output . '/' );
-
-        //then we rename it (ZipArchive doesn't handle directory rename)
-
-        if ($archive->open($zipFile) === true) {
-            //we also add a version file
-            $archive->addFromString($bundleName . '-' . $outputTag . '/VERSION.txt', $outputTag);
-            $archive->close();
-            $archive = new \ZipArchive();
-            $archive->open($zipFile);
-            $archive->extractTo($output . '/');
-            $archive->close();
-        } else {
-            $this->logError('Couldn\'t open archive ' . $zipFile);
-            if ($this->logger) $this->logger->writeln('Couldn\'t open archive ' . $zipFile);
-        }
-
+        if ($this->logger) $this->logger->writeln("removing old zip file...");
+        $this->fs->remove($zipFile);
+        if ($this->logger) $this->logger->writeln("generating new archive...");
+        $tmp = $this->fs->zipDir($output . '/' . $bundleName . '-' . $outputTag);
+        if ($this->logger) $this->logger->writeln("moving new archive from temporary directory...");
+        $this->fs->rename($tmp, $zipFile);
+        if ($this->logger) $this->logger->writeln("Repository $repository cloned !");
         $this->logAccess("Repository $repository cloned !");
         $scripts = ParametersHandler::getParameter('hook_scripts');
 
