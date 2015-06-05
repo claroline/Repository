@@ -34,14 +34,21 @@ class PackageGeneratorCommand extends Command
                InputOption::VALUE_NONE,
                'If set, all packages in packages.ini will be generated.'
             )
+            ->addOption(
+               'test',
+               null,
+               InputOption::VALUE_NONE,
+               'If set, the testing directory output will be used'
+            )
         ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $repositories = array();
-        $outputDir = ParametersHandler::getParameter('output_dir');
-
+        $prodDir = ParametersHandler::getParameter('output_dir');
+        $testDir = ParametersHandler::getParameter('test_dir');
+        $outputDir = $input->getOption('test') ? $testDir: $prodDir;
         $manager = new PackageManager($outputDir, $output);
 
         if ($name = $input->getArgument('name')) {
