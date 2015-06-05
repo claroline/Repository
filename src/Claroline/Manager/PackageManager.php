@@ -61,10 +61,19 @@ class PackageManager
 
         if ($this->logger) $this->logger->writeln("renaming root directory...");
 
-        $this->fs->rename(
-            $output . '/' . $this->getRepositoryUrlBundleName($repository) . '-' . $outputTag,
+        if ($output . '/' . $this->getRepositoryUrlBundleName($repository) . '-' . $outputTag !==
             $output . '/' . $bundleName . '-' . $outputTag
-        );
+        ) {
+            try {
+                $this->fs->rename(
+                    $output . '/' . $this->getRepositoryUrlBundleName($repository) . '-' . $outputTag,
+                    $output . '/' . $bundleName . '-' . $outputTag
+                );
+            } catch (\Symfony\Component\Filesystem\Exception\IOException $e) {
+                if ($this->logger) $this->logger->writeln("cannot rename... the file propably already exists.");
+            }
+            $this->fs->rmdir($output . '/' . $this->getRepositoryUrlBundleName($repository) . '-' . $outputTag, true);
+        }
 
         if ($this->logger) $this->logger->writeln("injecting version file...");
         file_put_contents($output . '/' . $bundleName . '-' . $outputTag . '/VERSION.txt', $outputTag);
