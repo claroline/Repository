@@ -66,7 +66,6 @@ class Controller
      */
     public function lastInstallableTag($bundle, $coreVersion, $type)
     {
-        var_dump($type);
         if ($type === 'test') $this->packageManager->setOutputDir(ParametersHandler::getParameter('test_dir'));
         $last = $this->packageManager->getLastInstallableTag($bundle, $coreVersion);
         $this->responseManager->renderJson(array('tag' => $last));
