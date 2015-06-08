@@ -121,7 +121,7 @@ class FileSystem extends Fs
                 $path = $includeRoot ?
                     pathinfo($directory, PATHINFO_FILENAME) . '/' . $this->relativePath($directory, $el->getPathName()):
                     $this->relativePath($directory, $el->getPathName());
-                $zipArchive->addFile($el->getPathName(), $path);
+                $zipArchive->addFile($el->getPathName(), basename($directory) . '/' . $path);
             }
         }
     }
