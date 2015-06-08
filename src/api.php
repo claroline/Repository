@@ -17,7 +17,6 @@ $routes = $loader->load('routes.yml');
 $controller = new Controller();
 $baseUrl = $requestContext->getBaseUrl();
 $path = substr($baseUrl, strpos($baseUrl, "/api.php") + 8);
-var_dump($path);
 $matcher = new UrlMatcher($routes, $requestContext);
 $parameters = $matcher->match($path);
 //I'll need to change that to make it less anoying and know the pattern beforehand
