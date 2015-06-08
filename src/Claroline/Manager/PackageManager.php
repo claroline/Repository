@@ -379,4 +379,9 @@ class PackageManager
     {
         if (property_exists($data, 'require')) return $data->require;
     }
+    
+    public function setOutputDir($dir)
+    {
+        $this->outputDir = $dir;
+    }
 }

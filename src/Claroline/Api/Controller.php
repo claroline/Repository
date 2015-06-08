@@ -22,8 +22,9 @@ class Controller
     /**
      * Returns the last tag of a bundle.
      */
-    public function lastTag($bundle)
+    public function lastTag($bundle, $type)
     {
+        if ($type === 'test') $this->packageManager->setOutputDir(ParametersHandler::getParameter('test_dir'));
         $tag = $this->packageManager->getLatestUploadedTag($bundle);
         $bundle = $this->packageManager->getBundle($bundle, $tag);
         $this->responseManager->renderJson($bundle->toArray());
@@ -32,8 +33,9 @@ class Controller
     /**
      * Returns a list of tag for a bundle.
      */
-    public function availableTags($bundle)
+    public function availableTags($bundle, $type)
     {
+        if ($type === 'test') $this->packageManager->setOutputDir(ParametersHandler::getParameter('test_dir'));
         $tags = $this->packageManager->getUploadedTags($bundle);
         $this->responseManager->renderJson(array('tags' => $tags));
     }
@@ -41,8 +43,9 @@ class Controller
     /**
      * Download a tag.
      */
-    public function downloadTag($bundle, $tag)
+    public function downloadTag($bundle, $tag, $type)
     {
+        if ($type === 'test') $this->packageManager->setOutputDir(ParametersHandler::getParameter('test_dir'));
         $tagDir = $this->packageManager->getTagOutputDirectory($bundle, $tag);
         $this->responseManager->downloadFile("$tagDir/package.zip");
     }
@@ -50,8 +53,9 @@ class Controller
     /**
      * Download the last installable version of a bundle
      */
-    public function downloadLast($bundle, $coreVersion)
+    public function downloadLast($bundle, $coreVersion, $type)
     {
+        if ($type === 'test') $this->packageManager->setOutputDir(ParametersHandler::getParameter('test_dir'));
         $tag = $this->packageManager->getLastInstallableTag($bundle, $coreVersion);
         $tagDir = $this->packageManager->getTagOutputDirectory($bundle, $tag);
         $this->responseManager->downloadFile("$tagDir/package.zip");
@@ -60,8 +64,10 @@ class Controller
     /**
      * Returns the last installable bundle tag for a version of the core bundle
      */
-    public function lastInstallableTag($bundle, $coreVersion)
+    public function lastInstallableTag($bundle, $coreVersion, $type)
     {
+        var_dump($type);
+        if ($type === 'test') $this->packageManager->setOutputDir(ParametersHandler::getParameter('test_dir'));
         $last = $this->packageManager->getLastInstallableTag($bundle, $coreVersion);
         $this->responseManager->renderJson(array('tag' => $last));
     }
@@ -69,8 +75,9 @@ class Controller
     /**
      * Returns a list of installable bundle tag for a version of the core bundle
      */
-    public function lastInstallableTags($coreVersion)
+    public function lastInstallableTags($coreVersion, $type)
     {
+        if ($type === 'test') $this->packageManager->setOutputDir(ParametersHandler::getParameter('test_dir'));
         $bundles = $this->packageManager->getLastInstallableTags($coreVersion);        
         $pkgs = array();
 
