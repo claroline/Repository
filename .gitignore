@@ -7,3 +7,4 @@ scripts/*
 scripts.log
 tmp
 releases/*
+test_dir/*
