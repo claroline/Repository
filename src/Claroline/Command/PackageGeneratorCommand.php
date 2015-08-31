@@ -18,6 +18,11 @@ class PackageGeneratorCommand extends Command
             ->setName('package:generate')
             ->setDescription('Generate the list of claroline packages in output directory specified')
             ->addArgument(
+                'branch',
+                InputArgument::REQUIRED,
+                'Wich branch do you want to update (5 or 6)?'
+            )
+            ->addArgument(
                 'name',
                 InputArgument::OPTIONAL,
                 'Wich package do you want to generate ?'
@@ -55,6 +60,7 @@ class PackageGeneratorCommand extends Command
             $repositories[] = $name;
         }
 
+        $branch = $input->getArgument('branch');
         $tag = $name = $input->getOption('tag');
 
         if ($input->getOption('a')) {
@@ -62,7 +68,7 @@ class PackageGeneratorCommand extends Command
         }
 
         foreach ($repositories as $repository) {
-            $manager->create($repository, $tag);
+            $manager->create($repository, $tag, $branch);
         }
     }
 }

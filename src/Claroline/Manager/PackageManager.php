@@ -24,9 +24,9 @@ class PackageManager
     /**
      * Creates an new package in the output directory.
      */
-    public function create($repository, $tag = null)
+    public function create($repository, $tag = null, $branch = null)
     {
-        if (!$tag) $tag = $this->getLatestRepositoryTag($repository);
+        if (!$tag) $tag = $this->getLatestRepositoryTag($repository, $branch);
         $bundleName = $this->getBundleFromRepository($repository);
         $outputTag = str_replace('v', '', $tag);
         $output = $this->outputDir . '/' . $bundleName . '/' . $outputTag;
@@ -97,9 +97,9 @@ class PackageManager
     /**
      * Get the last available tag of a repository from github.
      */
-    public function getLatestRepositoryTag($repository)
+    public function getLatestRepositoryTag($repository, $branch)
     {
-        $tags = $this->getRepositoryTags($repository);
+        $tags = $this->getRepositoryTags($repository, $branch);
 
         return $tags[0]->name;
     }
@@ -107,7 +107,7 @@ class PackageManager
     /**
      * Get the list of available tags from github.
      */
-    public function getRepositoryTags($repository)
+    public function getRepositoryTags($repository, $branch = null)
     {
         $options = array(
             'http' => array(
@@ -117,9 +117,23 @@ class PackageManager
             )
         );
 
-        return json_decode(file_get_contents("https://api.github.com/repos/$repository/tags", false,
+        $data = json_decode(file_get_contents("https://api.github.com/repos/$repository/tags", false,
             stream_context_create($options)
         ));
+
+        if ($branch) {
+            $branchVersions = array();
+
+            foreach ($data as $el) {
+                $version = $el->name;
+                $numbers = explode('.', $version);
+                if ((integer) $numbers[0] == (integer) $branch) $branchVersions[] = $el;
+            }
+
+            return $branchVersions;
+        }
+
+        return $data;
     }
 
     /**
@@ -379,7 +393,7 @@ class PackageManager
     {
         if (property_exists($data, 'require')) return $data->require;
     }
-    
+
     public function setOutputDir($dir)
     {
         $this->outputDir = $dir;
