@@ -27,6 +27,7 @@ class PackageManager
     public function create($repository, $tag = null, $branch = null)
     {
         if (!$tag) $tag = $this->getLatestRepositoryTag($repository, $branch);
+        if (!$tag) return null;
         $bundleName = $this->getBundleFromRepository($repository);
         $outputTag = str_replace('v', '', $tag);
         $output = $this->outputDir . '/' . $bundleName . '/' . $outputTag;
@@ -101,7 +102,15 @@ class PackageManager
     {
         $tags = $this->getRepositoryTags($repository, $branch);
 
-        return $tags[0]->name;
+        if (!$tags) return null;
+
+        if (isset($tags[0])) {
+            return $tags[0]->name;
+        } else {
+            $this->logger->writeln("Could not find a tag for repository {$repository} at the branch {$branch}.");
+            
+            return null;
+        }             
     }
 
     /**
@@ -121,11 +130,19 @@ class PackageManager
             stream_context_create($options)
         ));
 
+        if (!$data) {
+            $this->logger->writeln("Request rejected by github...");
+
+            return null;
+        }
+
         if ($branch) {
+
             $branchVersions = array();
 
             foreach ($data as $el) {
                 $version = $el->name;
+                $version = str_replace('v', '', $version);
                 $numbers = explode('.', $version);
                 if ((integer) $numbers[0] == (integer) $branch) $branchVersions[] = $el;
             }
