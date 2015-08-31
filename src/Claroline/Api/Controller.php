@@ -77,7 +77,7 @@ class Controller
     public function lastInstallableTags($coreVersion, $type)
     {
         if ($type === 'test') $this->packageManager->setOutputDir(ParametersHandler::getParameter('test_dir'));
-        $bundles = $this->packageManager->getLastInstallableTags($coreVersion);        
+        $bundles = $this->packageManager->getLastInstallableTags($coreVersion);
         $pkgs = array();
 
         foreach ($bundles as $bundle => $version) {
@@ -93,6 +93,7 @@ class Controller
      */
     public function addRelease()
     {
+        $this->packageManager->setOutputDir(ParametersHandler::getParameter('test_dir'));
         $headers = getallheaders();
 
         if (!isset($headers['X-Hub-Signature'])) {
@@ -116,6 +117,7 @@ class Controller
             return;
         }
 
-        $this->packageManager->create($repository);
+        $tag = $payload->release->tag_name;
+        $this->packageManager->create($repository, $tag);
     }
 }
