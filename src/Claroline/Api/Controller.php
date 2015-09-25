@@ -5,17 +5,20 @@ namespace Claroline\Api;
 use Claroline\Manager\PackageManager;
 use Claroline\Manager\ResponseManager;
 use Claroline\Handler\ParametersHandler;
+use Symfony\Component\Console\Output\StreamOutput;
 
 class Controller
 {
     private $outputDir;
     private $packageManager;
     private $responseManager;
+    private $logger;
 
     public function __construct()
     {
         $this->outputDir = ParametersHandler::getParameter('output_dir');
-        $this->packageManager = new PackageManager($this->outputDir);
+        $this->logger = new StreamOutput(fopen(ParametersHandler::getParameter('access_log'), 'a', false));
+        $this->packageManager = new PackageManager($this->outputDir, $this->logger);
         $this->responseManager = new ResponseManager();
     }
 

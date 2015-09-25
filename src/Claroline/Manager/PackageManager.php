@@ -29,15 +29,17 @@ class PackageManager
         if (!$tag) $tag = $this->getLatestRepositoryTag($repository, $branch);
         if (!$tag) return null;
         $bundleName = $this->getBundleFromRepository($repository);
+        if (!$bundleName) return null;
         $outputTag = str_replace('v', '', $tag);
         $output = $this->outputDir . '/' . $bundleName . '/' . $outputTag;
+        $this->logAccess("The output dir is {$output}");
         $this->fs->mkdir($output);
         $url = sprintf(
             "https://github.com/{$repository}/archive/%s.zip",
             $tag
         );
 
-        if ($this->logger) $this->logger->writeln("cloning $repository $outputTag...");
+        $this->logAccess("cloning $repository $outputTag...");
         //1st step, download and store the archive
 
         $ch = curl_init();
@@ -53,14 +55,14 @@ class PackageManager
         //2nd step, unzip everything and rename the root directory before we pack everything again!
         $archive = new \ZipArchive();
 
-        if ($this->logger) $this->logger->writeln("first extraction...");
+        $this->logAccess("first extraction...");
         //first we unzip
         if ($archive->open($zipFile) === true) {
             $archive->extractTo($output . '/');
             $archive->close();
         }
 
-        if ($this->logger) $this->logger->writeln("renaming root directory...");
+        $this->logAccess("renaming root directory...");
 
         if ($output . '/' . $this->getRepositoryUrlBundleName($repository) . '-' . $outputTag !==
             $output . '/' . $bundleName . '-' . $outputTag
@@ -71,20 +73,19 @@ class PackageManager
                     $output . '/' . $bundleName . '-' . $outputTag
                 );
             } catch (\Symfony\Component\Filesystem\Exception\IOException $e) {
-                if ($this->logger) $this->logger->writeln("cannot rename... the file propably already exists.");
+                $this->logAccess("cannot rename... the file propably already exists.");
             }
             $this->fs->rmdir($output . '/' . $this->getRepositoryUrlBundleName($repository) . '-' . $outputTag, true);
         }
 
-        if ($this->logger) $this->logger->writeln("injecting version file...");
+        $this->logAccess("injecting version file...");
         file_put_contents($output . '/' . $bundleName . '-' . $outputTag . '/VERSION.txt', $outputTag);
-        if ($this->logger) $this->logger->writeln("removing old zip file...");
+        $this->logAccess("removing old zip file...");
         $this->fs->remove($zipFile);
-        if ($this->logger) $this->logger->writeln("generating new archive...");
+        $this->logAccess("generating new archive...");
         $tmp = $this->fs->zipDir($output . '/' . $bundleName . '-' . $outputTag);
-        if ($this->logger) $this->logger->writeln("moving new archive from temporary directory...");
+        $this->logAccess("moving new archive from temporary directory...");
         $this->fs->rename($tmp, $zipFile);
-        if ($this->logger) $this->logger->writeln("Repository $repository cloned !");
         $this->logAccess("Repository $repository cloned !");
         $scripts = ParametersHandler::getParameter('hook_scripts');
 
@@ -107,7 +108,7 @@ class PackageManager
         if (isset($tags[0])) {
             return $tags[0]->name;
         } else {
-            $this->logger->writeln("Could not find a tag for repository {$repository} at the branch {$branch}.");
+            $this->logAccess("Could not find a tag for repository {$repository} at the branch {$branch}.");
             
             return null;
         }             
@@ -126,12 +127,12 @@ class PackageManager
             )
         );
 
-        $data = json_decode(file_get_contents("https://api.github.com/repos/$repository/tags", false,
-            stream_context_create($options)
-        ));
+        $token = ParametersHandler::getParameter('token');
+        $url = "https://api.github.com/repos/$repository/tags?access_token={$token}";
+        $data = json_decode(file_get_contents($url), false, stream_context_create($options));
 
         if (!$data) {
-            $this->logger->writeln("Request rejected by github...");
+            $this->logAccess("Request rejected by github for url {$url}.");
 
             return null;
         }
@@ -170,6 +171,12 @@ class PackageManager
         $data = json_decode(file_get_contents($url, false,
             stream_context_create($options)
         ));
+
+        if (!$data) {
+            $this->logAccess('Request rejected by github for ' . $url);
+
+            return null;
+        }
 
         $prop = 'target-dir';
         $parts = explode('/', $data->$prop);
@@ -313,7 +320,7 @@ class PackageManager
 
     public function logAccess($msg)
     {
-        file_put_contents(ParametersHandler::getParameter('access_log'), $this->prepareLog($msg), FILE_APPEND);
+        if ($this->logger) $this->logger->write($this->prepareLog($msg));
     }
 
     public function prepareLog($msg)
