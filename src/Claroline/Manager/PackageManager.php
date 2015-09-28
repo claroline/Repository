@@ -119,17 +119,8 @@ class PackageManager
      */
     public function getRepositoryTags($repository, $branch = null)
     {
-        $options = array(
-            'http' => array(
-                'method' => 'GET',
-                'user_agent' => 'Claroline',
-                'timeout' => 5
-            )
-        );
-
-        $token = ParametersHandler::getParameter('token');
-        $url = "https://api.github.com/repos/$repository/tags?access_token={$token}";
-        $data = json_decode(file_get_contents($url), false, stream_context_create($options));
+        $url = "https://api.github.com/repos/$repository/tags";
+        $data = json_decode($this->request($url));
 
         if (!$data) {
             $this->logAccess("Request rejected by github for url {$url}.");
@@ -159,18 +150,8 @@ class PackageManager
      */
     public function getBundleFromRepository($repository)
     {
-        $options = array(
-            'http' => array(
-                'method' => 'GET',
-                'user_agent' => 'Claroline',
-                'timeout' => 5
-            )
-        );
-
         $url = "https://raw.githubusercontent.com/{$repository}/master/composer.json";
-        $data = json_decode(file_get_contents($url, false,
-            stream_context_create($options)
-        ));
+        $data = json_decode($this->request($url));
 
         if (!$data) {
             $this->logAccess('Request rejected by github for ' . $url);
@@ -421,5 +402,21 @@ class PackageManager
     public function setOutputDir($dir)
     {
         $this->outputDir = $dir;
+    }
+    
+    public function request($url)
+    {
+        $options = array(
+            'http' => array(
+                'method' => 'GET',
+                'user_agent' => 'Claroline',
+                'timeout' => 5
+            )
+        );
+
+        $token = ParametersHandler::getParameter('token');
+        $url .= "?access_token={$token}";
+        
+        return file_get_contents($url, false, stream_context_create($options));
     }
 }
